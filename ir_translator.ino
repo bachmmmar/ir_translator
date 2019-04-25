@@ -17,7 +17,7 @@ IRsend irsend;  // uses pin 3 on arduino uno
 Timer timer;
 Amplifier amp(&irsend, & irrecv);
 Controller ctrl(&timer, &amp);
-TvRemoteReceiver tv_remote(&irrecv, &ctrl);
+TvRemoteReceiver tv_remote(&irrecv, &ctrl, &timer);
 
 void setup() {
 

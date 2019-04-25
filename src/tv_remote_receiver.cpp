@@ -4,13 +4,18 @@
 
 #include "controller.h"
 #include "IRremote/IRremote.h"
+#include "timer/Timer.h"
 
-TvRemoteReceiver::TvRemoteReceiver(IRrecv * ir_receiver, Controller * ctrl) : ir_receiver_(ir_receiver), ctrl_(ctrl) {}
+
+#define ENABLE_RECEIVER_TIMER_MS 60000
+
+TvRemoteReceiver::TvRemoteReceiver(IRrecv * ir_receiver, Controller * ctrl, Timer * timer) : ir_receiver_(ir_receiver), ctrl_(ctrl), timer_(timer) {}
 
 
 void TvRemoteReceiver::setup() {
 	Serial.println("Setting up ir receiver");
 	ir_receiver_->enableIRIn();  // Start the receiver
+	timer_->every(ENABLE_RECEIVER_TIMER_MS, ensureWorkingReceiver, this);
 }
 
 
@@ -23,6 +28,15 @@ void TvRemoteReceiver::receive() {
 
 		ir_receiver_->resume(); // Receive the next value
   	}
+}
+
+void TvRemoteReceiver::ensureWorkingReceiver(void *ptr) {
+	if (static_cast<TvRemoteReceiver*>(ptr)->ir_receiver_->isIdle()) {
+		Serial.println("Receiver Idle");
+		static_cast<TvRemoteReceiver*>(ptr)->ir_receiver_->enableIRIn();
+	} else {
+		Serial.println("Receiver not Idle");
+	}
 }
 
 void TvRemoteReceiver::extractCommand(const decode_results & results) {
