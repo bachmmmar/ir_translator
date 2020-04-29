@@ -21,6 +21,8 @@ private:
 	Timer * timer_;
 	Amplifier * amp_;
 
+	bool tvNotPC_;
+
 	static void selectMusic(void *ptr);
 
 };

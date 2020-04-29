@@ -8,7 +8,7 @@
 
 
 
-Controller::Controller(Timer * timer, Amplifier * amp) : timer_(timer), amp_(amp) {}
+Controller::Controller(Timer * timer, Amplifier * amp) : timer_(timer), amp_(amp), tvNotPC_(false) {}
 
 
 void Controller::setup() {
@@ -31,7 +31,11 @@ void Controller::receivedCommand(Commands cmd) {
 			amp_->chooseTV();
 			break;
 		case TVSource:
-			amp_->choosePC();
+			if (tvNotPC_)
+				amp_->choosePC();
+			else
+				amp_->chooseTV();
+			tvNotPC_ = !tvNotPC_;
 			break;
 	}
 }
